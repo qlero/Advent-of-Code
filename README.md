@@ -1,0 +1,7 @@
+# Advent of Code
+
+# Completion
+
+- 2020 : Haskell [9/25]
+- 2025 : Python  [5/12]
+- 2025 : C       [4/12]
