@@ -1,4 +1,4 @@
-with open("test.txt", "r") as f:
+with open("data.txt", "r") as f:
     x = [l.strip() for l in f]
 
 blank_space_index = x.index('')
@@ -19,20 +19,20 @@ print("[v1] Day 5 part 1: ", count)
 # Version 1
 
 range_acc  = []
-range_ids  = sorted(range_ids)
+range_ids_copy  = sorted(range_ids)
 position   = 0
 look_ahead = 1
 
-while position < len(range_ids) and position + look_ahead < len(range_ids):
+while position < len(range_ids_copy) and position + look_ahead < len(range_ids_copy):
 
     # 340433326438191
 
     if look_ahead == 1:
-        placeholder = range_ids[position]
+        placeholder = range_ids_copy[position]
 
     b = placeholder[1]
-    c = range_ids[position + look_ahead][0]
-    d = range_ids[position + look_ahead][1]
+    c = range_ids_copy[position + look_ahead][0]
+    d = range_ids_copy[position + look_ahead][1]
 
     if b < c:
         range_acc.append(placeholder)
@@ -45,7 +45,7 @@ while position < len(range_ids) and position + look_ahead < len(range_ids):
 else:
 
     if look_ahead == 1:
-        range_acc.append(range_ids[-1])
+        range_acc.append(range_ids_copy[-1])
     else:
         range_acc.append(placeholder)
 

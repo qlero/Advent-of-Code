@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_ROWS 1000
+#define MAX_ROWS 5000
 #define MAX_COLUMNS 2
 
 struct ROW_COUNTS {
@@ -38,7 +38,7 @@ struct ROW_COUNTS read_file(char * filename, long fresh_ids[MAX_ROWS][MAX_COLUMN
     }
 
     // 2. decrement the file pointer enough [DISGUSTING]
-    fseek(file, -2*sizeof(long), SEEK_CUR);
+    fseek(file, -sizeof(long), SEEK_CUR);
     int discard_first_find = 1;
 
     // 3. read the file
