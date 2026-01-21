@@ -14,7 +14,7 @@ struct ROW_COUNTS read_file(char * filename, long fresh_ids[MAX_ROWS][MAX_COLUMN
     FILE * file;
     struct ROW_COUNTS row_counts = {0, 0};
 
-    // 1. open the file in reading mode
+    // 0. open the file in reading mode
     file = fopen(filename, "r");
     if (file == NULL) {
         perror("Error opening the file.");
@@ -23,7 +23,7 @@ struct ROW_COUNTS read_file(char * filename, long fresh_ids[MAX_ROWS][MAX_COLUMN
         return row_counts;
     }
 
-    // 2. read the file to import the fresh IDs
+    // 1. read the file to import the fresh IDs
     // fscanf return the number of items successfully read.
     while (fscanf(file, "%ld-%ld", &fresh_ids[row_counts.row_count_fresh_ids][0], &fresh_ids[row_counts.row_count_fresh_ids][1]) == 2) {
 
@@ -41,8 +41,7 @@ struct ROW_COUNTS read_file(char * filename, long fresh_ids[MAX_ROWS][MAX_COLUMN
     fseek(file, -sizeof(long), SEEK_CUR);
     int discard_first_find = 1;
 
-    // 3. read the file
-    // fscanf return the number of items successfully read.
+    // 3. read the file to return the IDs to check
     while (fscanf(file, "%ld\n", &ids_to_check[row_counts.row_count_ids_to_check]) != EOF) {
         if (discard_first_find) {
             discard_first_find = 0;
