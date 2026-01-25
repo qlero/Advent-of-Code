@@ -33,18 +33,9 @@ int read_file(char * filename, char array[MAX_ROWS][MAX_COLUMNS]) {
         row_count++;
     }
 
-    
-    for (int i = 0; i < row_count; i++) {
-        strip_lf(array[i]);
-        printf("%ld - %s\n", strlen(array[i]), array[i]);
-    }
 
     fclose(file);
 
     return row_count;
 }
 
-int main() {
-    char array[MAX_ROWS][MAX_COLUMNS] = { 0 };
-    int row_count = read_file("day6_test.txt", array);
-}
