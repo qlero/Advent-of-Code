@@ -24,7 +24,7 @@ int read_file(char * filename, long array[MAX_ROWS][MAX_COLUMNS]) {
         row_count++;
 
         // errors out if issue found
-        if (row_count >= MAX_ROWS) {
+        if (row_count > MAX_ROWS) {
             perror("Data to be read larger than provided array size.\nRemaining data discarded.");
             break;
         }
