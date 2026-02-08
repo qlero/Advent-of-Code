@@ -61,23 +61,13 @@ struct relative_indexes compute_relative_indexes(long flat_array[], int length_a
         }
         // if a new smallest distance is found, records the indexes of 
         // underlying the matching points
-        if (flat_array[i] < minimum) {
+        if (flat_array[i] <= minimum) {
             minimum  = flat_array[i];
             index_p1 = temp_p1;
             index_p2 = i - decrement_index_p2 + 1*(index_p1+1);
             relative_index_p2 = i;
-            // printf("=> %d %ld - %d %d %d %d\n", i, minimum, index_p1, index_p2, relative_index_p2, decrement_index_p2);
         }
     }
-
-    // printf("%d %d - ", index_p1, index_p2);
-    // printf("(%ld,%ld,%ld) (%ld, %ld,%ld)\n", 
-    // a[index_p1][0],
-    // a[index_p1][1],
-    // a[index_p1][2],
-    // a[index_p2][0],
-    // a[index_p2][1],
-    // a[index_p2][2]);
 
     struct relative_indexes ret = {index_p1, index_p2, relative_index_p2};
     return ret;
@@ -108,12 +98,11 @@ int compare( const void* a, const void* b)
    return (int_a > int_b) - (int_a < int_b);
 }
 
-
 long solver(long array[MAX_ROWS][MAX_COLUMNS], int max_connections, int row_count) {
 
     // Initiates placeholder struct for return values from compute_relative_indexes
     struct relative_indexes indexes;
-    int result_part_1;
+    long result_part_1;
     long result_part_2;
 
     // Initiates and populates strictly upper triangular "matrix" of euclidean distance between two points
@@ -168,11 +157,24 @@ long solver(long array[MAX_ROWS][MAX_COLUMNS], int max_connections, int row_coun
             row_count
         );
 
+        printf("(%ld,%ld,%ld) (%ld, %ld,%ld) - dist: %ld\n", 
+        array[indexes.index_p1][0],
+        array[indexes.index_p1][1],
+        array[indexes.index_p1][2],
+        array[indexes.index_p2][0],
+        array[indexes.index_p2][1],
+        array[indexes.index_p2][2],
+        sutm_dist_between_points[indexes.relative_index_p2]);
+
+        // if (max_connections < 900) {
+        // break;
+        // }
+
         // Case 1: p1 and p2 are singletons to be joined -> join p2 to p1 cluster
         //         p1 is in a cluster but not p2
         if ((!check_mapping_point[indexes.index_p1]) && (!check_mapping_point[indexes.index_p2])) {
 
-            // printf("Case 1\n");
+            printf("Case 1\n");
 
             // Updates p2 cluster and decrement previous p2 cluster size
             cluster_of_each_point[indexes.index_p2] = cluster_of_each_point[indexes.index_p1];
@@ -187,7 +189,7 @@ long solver(long array[MAX_ROWS][MAX_COLUMNS], int max_connections, int row_coun
         // Case 2: p1 is in a cluster but not p2 -> join p2 to p1 cluster
         else if (check_mapping_point[indexes.index_p1] && (!check_mapping_point[indexes.index_p2])) {
 
-            // printf("Case 2\n");
+            printf("Case 2\n");
             
             // Updates p2 cluster and decrement previous p2 cluster size
             size_of_each_cluster[indexes.index_p2]--;
@@ -201,7 +203,7 @@ long solver(long array[MAX_ROWS][MAX_COLUMNS], int max_connections, int row_coun
         // Case 3: p2 is in a cluster but not p1 -> join p1 to p2 cluster
         else if ((!check_mapping_point[indexes.index_p1]) && check_mapping_point[indexes.index_p2]) {
 
-            // printf("Case 3\n");
+            printf("Case 3\n");
             
             // Updates p2 cluster and decrement previous p2 cluster size
             size_of_each_cluster[indexes.index_p1]--;
@@ -217,7 +219,7 @@ long solver(long array[MAX_ROWS][MAX_COLUMNS], int max_connections, int row_coun
                  &&
                  (cluster_of_each_point[indexes.index_p1] != cluster_of_each_point[indexes.index_p2])) {
 
-            // printf("Case 4\n");
+            printf("Case 4\n");
 
             for (int i=0; i < row_count; i++) {
                 if (cluster_of_each_point[i] == cluster_of_each_point[indexes.index_p2]) {
@@ -233,41 +235,33 @@ long solver(long array[MAX_ROWS][MAX_COLUMNS], int max_connections, int row_coun
         //     printf("Case 5: nothing happens\n");
         // }
         
-        if (max_connections != -1) {
+        if (max_connections >= 0) {
             max_connections--;
         }
 
-        // printf("%d\n", indexes.relative_index_p2);
         sutm_dist_between_points[indexes.relative_index_p2] = LONG_MAX;
-
-        // for (int i = 0; i < length_upper_triangle_matrix_as_vector; i++){
-        //     printf("%ld ", sutm_dist_between_points[i]);
-        // }
-        // printf("\n");
-
-        // // Finds the new array location of p1 and p2 (the closest point at the time)
-        // indexes = compute_relative_indexes(
-        //     sutm_dist_between_points, 
-        //     length_upper_triangle_matrix_as_vector, 
-        //     row_count, 
-        //     array
-        // );
     }
 
-    if (max_connections == -1) {
-        result_part_2 = array[indexes.index_p1][0] * array[indexes.index_p2][0];
-        return result_part_2;
-    } else {
+    if (max_connections != -1) {
+        // Part 1
         qsort(size_of_each_cluster, row_count, sizeof(long), compare);
-        result_part_1 = 1;
+        printf("[");
         for (int i = 0; i < row_count; i++) {
-            printf("%ld ", size_of_each_cluster[i]);
+            printf("%ld, ", size_of_each_cluster[i]);
         }
-        printf("\n");
+        printf("]\n");
+
+        result_part_1 = 1;
         for (int i = row_count-3; i < row_count; i++) {
+            printf("%d %ld\n", i, size_of_each_cluster[i]);
             result_part_1 *= size_of_each_cluster[i];
         }
         return result_part_1;
+    } 
+    else {
+        // Part 2
+        result_part_2 = array[indexes.index_p1][0] * array[indexes.index_p2][0];
+        return result_part_2;
     }
 
     return 0;
@@ -284,11 +278,11 @@ int main() {
     int row_count = read_file(filename, array);
     printf("File read, row count: %d\n", row_count);
 
-    int result_part_1 = solver(array, 1100, row_count);
+    int result_part_1 = solver(array, 1000, row_count);
     printf("Day 8 Part 1: %d\n", result_part_1);
 
-    long result_part_2 = solver(array, -1, row_count);
-    printf("Day 8 Part 2: %ld\n", result_part_2);
+    // long result_part_2 = solver(array, -1, row_count);
+    // printf("Day 8 Part 2: %ld\n", result_part_2);
 
     return 1;
 }

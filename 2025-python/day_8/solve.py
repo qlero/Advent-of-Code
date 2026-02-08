@@ -64,9 +64,15 @@ def solver(data, max_connections=None):
         relative_index_p2 = sutm_dist_between_points[index_p1].index(min_value)
         index_p2          = relative_index_p2 + index_p1 + 1
 
+        # if max_connections < 900:
+        #     break
+        print(data[index_p1], data[index_p2])
+
         # Case 1: p1 and p2 are singletons to be joined -> join p2 to p1 cluster
         #         p1 is in a cluster but not p2
         if ((not check_mapping_point[index_p1]) and (not check_mapping_point[index_p2])):
+
+            print("case 1")
 
             # Updates p2 cluster and decrement previous p2 cluster size
             cluster_of_each_point[index_p2] = cluster_of_each_point[index_p1]
@@ -79,8 +85,10 @@ def solver(data, max_connections=None):
             check_mapping_point[index_p1] = True
             check_mapping_point[index_p2] = True
 
-        # Case 2: p1 is not in a cluster but p2 is -> join p1 to p2 cluster
+        # Case 2: p1 is in a cluster but not p2 -> join p2 to p1 cluster
         elif check_mapping_point[index_p1] and (not check_mapping_point[index_p2]):
+
+            print("case 2")
 
             # Updates cluster sizes
             size_of_each_cluster[index_p2] -= 1
@@ -95,6 +103,8 @@ def solver(data, max_connections=None):
         # Case 3: p1 is not in a cluster but p2 is -> join p1 to p2 cluster
         elif (not check_mapping_point[index_p1]) and check_mapping_point[index_p2]:
 
+            print("case 3")
+
             # Updates cluster sizes
             size_of_each_cluster[index_p1] -= 1
             size_of_each_cluster[cluster_of_each_point[index_p2]] += 1
@@ -105,9 +115,11 @@ def solver(data, max_connections=None):
             # Updates check
             check_mapping_point[index_p1] = True
 
-        # Case 4: p1 and p2 are on 2 different clusters -> merge
+        # Case 4: p1 and p2 are in 2 different clusters -> merge
         elif (check_mapping_point[index_p1] and check_mapping_point[index_p2]) and \
             cluster_of_each_point[index_p1] != cluster_of_each_point[index_p2]:
+
+            print("case 4")
             
             receiving_cluster = cluster_of_each_point[index_p1]
             giving_cluster = cluster_of_each_point[index_p2]
@@ -136,6 +148,7 @@ def solver(data, max_connections=None):
             print(f"Cluster {i} nb. elements: {size_of_each_cluster[i]}")
     
     if max_connections is not None:
+        print(sorted(size_of_each_cluster))
         print("result: ", math.prod([s for s in sorted(size_of_each_cluster)[-3:] if s!=0]))
     else:
         print("result: ", data[index_p1][0] * data[index_p2][0])
@@ -145,5 +158,5 @@ with open("data.txt", "r") as f:
 
 print("Day 8 part 1:")
 part_1 = solver(data, 1000)
-print("\nDay 8 part 2:")
-part_2 = solver(data)
+# print("\nDay 8 part 2:")
+# part_2 = solver(data)
